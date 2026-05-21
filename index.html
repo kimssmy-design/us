@@ -1,0 +1,1273 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎬 영화 &lt;우리들&gt;로 생각해보는 진짜 우정</title>
+
+<!-- 폭죽 효과용 라이브러리 -->
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+
+<style>
+  :root {
+    --primary: #1a1a1a;
+    --primary-soft: #2c2c2c;
+    --accent: #c0392b;
+    --accent-light: #fce8e5;
+    --accent-soft: #d56156;
+    --green: #5a8a6b;
+    --green-light: #e8f0e9;
+    --bg: #f5efe6;
+    --card: #ffffff;
+    --border: #e3d9c9;
+    --text: #1a1a1a;
+    --text-sub: #5d5d5d;
+    --text-light: #8a8a8a;
+    --radius: 12px;
+    --shadow: 0 2px 8px rgba(60, 40, 20, 0.06);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Malgun Gothic', '맑은 고딕', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 15px;
+    line-height: 1.65;
+    padding-bottom: 60px;
+    min-height: 100vh;
+  }
+
+  .top-bar {
+    background: linear-gradient(135deg, #2c2c2c 0%, #1a1a1a 100%);
+    color: white;
+    padding: 20px 20px 16px;
+    text-align: center;
+    border-bottom: 3px solid var(--accent);
+  }
+  .top-bar h1 {
+    font-size: 19px;
+    margin-bottom: 5px;
+    letter-spacing: -0.3px;
+  }
+  .top-bar h1 .accent-text { color: #ff8a7a; }
+  .top-bar p { font-size: 12px; opacity: 0.75; }
+
+  .progress-wrap {
+    background: #ede4d3;
+    padding: 10px 20px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  }
+  .progress-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--text-sub);
+    margin-bottom: 5px;
+    font-weight: 600;
+  }
+  .progress-bar {
+    height: 6px;
+    background: #d4c8b0;
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--green) 0%, var(--accent) 100%);
+    border-radius: 3px;
+    transition: width 0.4s ease;
+    width: 0%;
+  }
+
+  .step { display: none; }
+  .step.active { display: block; animation: fadeIn 0.3s ease; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .container {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 20px 16px;
+  }
+
+  .card {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 16px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+  }
+
+  .card-title {
+    font-size: 16px;
+    font-weight: bold;
+    color: var(--primary);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    line-height: 1.5;
+  }
+  .card-title .q-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    background: var(--accent);
+    color: white;
+    border-radius: 50%;
+    font-size: 13px;
+    font-weight: bold;
+    flex-shrink: 0;
+  }
+
+  .card-desc {
+    font-size: 13px;
+    color: var(--text-sub);
+    margin-bottom: 14px;
+    line-height: 1.7;
+  }
+
+  .card-quote {
+    background: #f9f4eb;
+    border-left: 3px solid var(--accent);
+    padding: 10px 14px;
+    margin: 10px 0;
+    font-size: 13.5px;
+    color: var(--primary-soft);
+    border-radius: 0 6px 6px 0;
+    font-style: italic;
+  }
+
+  .intro-card {
+    background: var(--accent-light);
+    border: 1.5px solid #f0a8a0;
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    margin-bottom: 18px;
+    font-size: 14px;
+    line-height: 1.75;
+  }
+  .intro-card strong { color: var(--accent); }
+  .intro-card .intro-time {
+    display: inline-block;
+    background: white;
+    border: 1px solid #f0a8a0;
+    border-radius: 20px;
+    padding: 3px 12px;
+    font-size: 12px;
+    color: var(--accent);
+    font-weight: bold;
+    margin-top: 8px;
+  }
+
+  .name-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 6px;
+  }
+  @media (max-width: 480px) {
+    .name-row { grid-template-columns: 1fr 1fr; }
+  }
+  .input-group label {
+    display: block;
+    font-size: 12px;
+    color: var(--text-sub);
+    margin-bottom: 4px;
+    font-weight: bold;
+  }
+  .input-group input, .input-group select {
+    width: 100%;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 14px;
+    font-family: inherit;
+    outline: none;
+    background: white;
+    transition: border-color 0.2s;
+  }
+  .input-group input:focus, .input-group select:focus {
+    border-color: var(--accent);
+  }
+
+  .radio-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .radio-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-size: 14px;
+    background: white;
+  }
+  .radio-item:hover {
+    border-color: var(--accent);
+    background: #fffbf9;
+  }
+  .radio-item.selected {
+    border-color: var(--accent);
+    background: var(--accent-light);
+  }
+  .radio-item input[type="radio"] { display: none; }
+  .radio-circle {
+    width: 18px;
+    height: 18px;
+    border: 2px solid #bbb;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 2px;
+    position: relative;
+    transition: all 0.15s;
+  }
+  .radio-item.selected .radio-circle {
+    border-color: var(--accent);
+  }
+  .radio-item.selected .radio-circle::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 8px;
+    height: 8px;
+    background: var(--accent);
+    border-radius: 50%;
+  }
+  .radio-item .radio-text {
+    flex: 1;
+  }
+  .radio-item .radio-num {
+    color: var(--accent);
+    font-weight: bold;
+    margin-right: 4px;
+  }
+
+  .character-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+    margin: 10px 0 14px;
+  }
+  .char-card {
+    padding: 14px 8px;
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.15s;
+    background: white;
+  }
+  .char-card:hover {
+    border-color: var(--accent);
+    background: #fffbf9;
+  }
+  .char-card.selected {
+    border-color: var(--accent);
+    background: var(--accent-light);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(192, 57, 43, 0.15);
+  }
+  .char-emoji { font-size: 28px; margin-bottom: 4px; }
+  .char-name {
+    font-size: 14px;
+    font-weight: bold;
+    color: var(--primary);
+  }
+  .char-desc {
+    font-size: 11px;
+    color: var(--text-light);
+    margin-top: 2px;
+  }
+  .char-card.selected .char-desc { color: var(--accent); }
+
+  textarea {
+    width: 100%;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 14px;
+    font-family: inherit;
+    resize: vertical;
+    min-height: 90px;
+    outline: none;
+    transition: border-color 0.2s;
+    line-height: 1.7;
+    background: white;
+  }
+  textarea:focus { border-color: var(--accent); }
+  .textarea-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 4px;
+    font-size: 11px;
+    color: var(--text-light);
+  }
+  .textarea-meta .hint {
+    color: var(--green);
+    font-weight: 600;
+  }
+  .textarea-meta .count-info {
+    font-weight: 600;
+  }
+  .textarea-meta .count-info.insufficient {
+    color: var(--accent);
+  }
+  .textarea-meta .count-info.sufficient {
+    color: var(--green);
+  }
+
+  input[type="text"].full-input {
+    width: 100%;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    padding: 11px 12px;
+    font-size: 14px;
+    font-family: inherit;
+    outline: none;
+    background: white;
+    transition: border-color 0.2s;
+  }
+  input[type="text"].full-input:focus { border-color: var(--accent); }
+
+  .optional-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: var(--green-light);
+    color: var(--green);
+    border-radius: 14px;
+    padding: 2px 10px;
+    font-size: 11px;
+    font-weight: bold;
+    margin-left: 6px;
+  }
+
+  .btn-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 16px;
+  }
+  .btn {
+    flex: 1;
+    padding: 14px 16px;
+    border: none;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: white;
+  }
+  .btn-primary:hover:not(:disabled) {
+    background: #a82e21;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(192, 57, 43, 0.3);
+  }
+  .btn-secondary {
+    background: white;
+    color: var(--text-sub);
+    border: 1.5px solid var(--border);
+  }
+  .btn-secondary:hover:not(:disabled) {
+    border-color: var(--text-sub);
+  }
+  .btn-success {
+    background: var(--green);
+    color: white;
+  }
+  .btn-success:hover:not(:disabled) {
+    background: #487056;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(90, 138, 107, 0.3);
+  }
+  .btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+
+  .btn-spinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2.5px solid rgba(255, 255, 255, 0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  .loading-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(245, 239, 230, 0.85);
+    backdrop-filter: blur(3px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    flex-direction: column;
+  }
+  .loading-overlay.show { display: flex; }
+  .loading-spinner {
+    width: 60px;
+    height: 60px;
+    border: 5px solid rgba(192, 57, 43, 0.15);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 18px;
+  }
+  .loading-text {
+    font-size: 15px;
+    color: var(--primary);
+    font-weight: bold;
+    text-align: center;
+  }
+  .loading-subtext {
+    font-size: 12px;
+    color: var(--text-sub);
+    margin-top: 5px;
+  }
+
+  .toast {
+    position: fixed;
+    top: 70px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-100px);
+    background: var(--primary);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 24px;
+    font-size: 14px;
+    z-index: 1000;
+    opacity: 0;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    max-width: 90%;
+    text-align: center;
+  }
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  .done-screen {
+    text-align: center;
+    padding: 60px 20px 40px;
+    background: white;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    margin-top: 30px;
+  }
+  .done-icon {
+    font-size: 80px;
+    margin-bottom: 20px;
+    animation: bounce 0.8s ease;
+  }
+  @keyframes bounce {
+    0% { transform: scale(0); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+  }
+  .done-screen h2 {
+    font-size: 22px;
+    color: var(--accent);
+    margin-bottom: 12px;
+  }
+  .done-screen p {
+    font-size: 14px;
+    color: var(--text-sub);
+    line-height: 1.8;
+  }
+  .done-screen .student-name {
+    font-weight: bold;
+    color: var(--accent);
+  }
+
+  .highlight-box {
+    background: #fdf5e8;
+    border: 1.5px solid #e8c992;
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin: 10px 0;
+    font-size: 13.5px;
+    line-height: 1.7;
+  }
+  .highlight-box .label {
+    color: #a87010;
+    font-weight: bold;
+    margin-right: 4px;
+  }
+
+  .step-header {
+    text-align: center;
+    margin-bottom: 20px;
+    padding: 14px 16px;
+    background: white;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+  }
+  .step-header .step-num {
+    display: inline-block;
+    background: var(--accent);
+    color: white;
+    border-radius: 14px;
+    padding: 3px 12px;
+    font-size: 12px;
+    font-weight: bold;
+    margin-bottom: 6px;
+  }
+  .step-header h2 {
+    font-size: 17px;
+    color: var(--primary);
+    margin-bottom: 4px;
+  }
+  .step-header p {
+    font-size: 12.5px;
+    color: var(--text-sub);
+  }
+</style>
+</head>
+
+<body>
+
+<!-- 헤더 -->
+<div class="top-bar">
+  <h1>🎬 영화 &lt;<span class="accent-text">우리들</span>&gt;로 생각해보는 진짜 우정</h1>
+  <p>중학교 도덕 · 우정과 갈등</p>
+</div>
+
+<!-- 진행바 -->
+<div class="progress-wrap">
+  <div class="progress-info">
+    <span id="stepLabel">1단계 / 3단계</span>
+    <span id="stepDesc">기본 정보 + 첫인상</span>
+  </div>
+  <div class="progress-bar">
+    <div class="progress-fill" id="progressFill"></div>
+  </div>
+</div>
+
+<!-- ============= STEP 1: 기본 정보 ============= -->
+<div class="step active" id="step1">
+  <div class="container">
+
+    <div class="intro-card">
+      🌺 영화 <strong>&lt;우리들&gt;</strong>은 방학 동안 단짝이 된 두 친구가 개학 후 멀어지는 이야기예요.
+      여러분도 분명 비슷한 경험이 있을 거예요. 정답은 없으니 <strong>솔직한 내 생각</strong>을 적어주세요.
+      <br>
+      <span class="intro-time">⏱️ 약 18~22분 소요</span>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📝 기본 정보</div>
+      <div class="name-row">
+        <div class="input-group">
+          <label>학년·반</label>
+          <input type="text" id="classInfo" placeholder="예: 2-3" maxlength="10">
+        </div>
+        <div class="input-group">
+          <label>번호</label>
+          <input type="text" id="number" placeholder="예: 15" maxlength="3">
+        </div>
+        <div class="input-group">
+          <label>이름</label>
+          <input type="text" id="name" placeholder="이름" maxlength="10">
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">
+        <span class="q-num">0</span>
+        영화를 본 직후, 한 단어로 표현한다면?
+      </div>
+      <div class="card-desc">
+        지금 떠오르는 느낌이나 단어를 자유롭게 적어주세요. (예: 답답함, 짠함, 어색함, 미안함...)
+      </div>
+      <input type="text" class="full-input" id="firstImpression" placeholder="단어 1~3개 정도" maxlength="30">
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="goStep(2)">다음 →</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============= STEP 2: PART 1 - 영화 속 우리들 ============= -->
+<div class="step" id="step2">
+  <div class="container">
+
+    <div class="step-header">
+      <div class="step-num">PART 1 · 영화 속 우리들</div>
+      <h2>줄거리와 디테일 파악하기</h2>
+      <p>영화의 중요한 장면들을 함께 짚어봐요</p>
+    </div>
+
+    <!-- Q1. 선택형 -->
+    <div class="card">
+      <div class="card-title">
+        <span class="q-num">1</span>
+        선이와 지아의 사이가 멀어진 가장 큰 이유는?
+      </div>
+      <div class="card-desc">
+        방학 동안 단짝처럼 지내던 두 사람이 개학 후 멀어지게 된 가장 큰 사건은 무엇이었나요?
+      </div>
+      <div class="radio-list" id="q1List">
+        <label class="radio-item" onclick="selectRadio(this, 'q1', 'A')">
+          <span class="radio-circle"></span>
+          <span class="radio-text"><span class="radio-num">①</span> 보라가 끼어들면서 지아가 보라 무리에 합류함</span>
+          <input type="radio" name="q1" value="A">
+        </label>
+        <label class="radio-item" onclick="selectRadio(this, 'q1', 'B')">
+          <span class="radio-circle"></span>
+          <span class="radio-text"><span class="radio-num">②</span> 지아의 가정형편이 드러난 일</span>
+          <input type="radio" name="q1" value="B">
+        </label>
+        <label class="radio-item" onclick="selectRadio(this, 'q1', 'C')">
+          <span class="radio-circle"></span>
+          <span class="radio-text"><span class="radio-num">③</span> 선이가 지아의 비밀을 다른 친구에게 말함</span>
+          <input type="radio" name="q1" value="C">
+        </label>
+        <label class="radio-item" onclick="selectRadio(this, 'q1', 'D')">
+          <span class="radio-circle"></span>
+          <span class="radio-text"><span class="radio-num">④</span> 선이와 지아가 서로 다른 학원에 다니게 됨</span>
+          <input type="radio" name="q1" value="D">
+        </label>
+      </div>
+    </div>
+
+    <!-- Q2. 선이의 마음 -->
+    <div class="card">
+      <div class="card-title">
+        <span class="q-num">2</span>
+        피구 경기 마지막 장면, 선이의 마음은?
+      </div>
+      <div class="card-desc">
+        영화 마지막 피구 경기에서 선이는 금을 밟았다고 몰린 지아를 위해 한마디 합니다.
+      </div>
+      <div class="card-quote">
+        💬 "쟤(지아)... 금 안 밟았어"
+      </div>
+      <div class="card-desc">
+        선이는 그 순간 어떤 결심을 했을까요? 선이의 마음을 짐작해서 적어보세요.
+      </div>
+      <textarea id="q2" data-min="30" placeholder="선이의 마음을 짐작해 적어보세요..." oninput="updateCharCount(this, 'q2Count', 30)"></textarea>
+      <div class="textarea-meta">
+        <span class="hint">💡 권장: 50~100자 (최소 30자)</span>
+        <span class="count-info insufficient" id="q2Count">0 / 30자</span>
+      </div>
+    </div>
+
+    <!-- Q3 (NEW). 지아가 선이네 집에서 고개 떨군 이유 -->
+    <div class="card">
+      <div class="card-title">
+        <span class="q-num">3</span>
+        지아가 선이네 집에서 고개를 떨군 이유는?
+      </div>
+      <div class="card-desc">
+        지아는 선이의 집에서 하룻밤을 보낼 때, 선이의 가족이 다정하게 지내는 모습을 보고 <strong>고개를 떨굽니다</strong>.
+        지아는 왜 그랬을까요? 지아의 마음을 짐작해 적어보세요.
+      </div>
+      <textarea id="q3" data-min="40" placeholder="지아의 마음을 짐작해 적어보세요..." oninput="updateCharCount(this, 'q3Count', 40)"></textarea>
+      <div class="textarea-meta">
+        <span class="hint">💡 권장: 80~120자 (최소 40자)</span>
+        <span class="count-info insufficient" id="q3Count">0 / 40자</span>
+      </div>
+    </div>
+
+    <!-- Q4 (NEW). 선이의 노력이 왜 외면당했나 -->
+    <div class="card">
+      <div class="card-title">
+        <span class="q-num">4</span>
+        선이의 노력은 왜 외면당했을까?
+      </div>
+      <div class="card-desc">
+        선이는 지아와의 우정을 지키기 위해 여러 가지 노력을 합니다.
+      </div>
+      <div class="card-quote">
+        💬 우정 팔찌를 만들어 선물하기 · 오이가 들어간 김밥을 따로 챙겨가기 등
+      </div>
+      <div class="card-desc">
+        선이의 이런 노력이 <strong>왜 결국 지아에게 외면당하거나 갈등의 원인</strong>이 되었을까요?
+      </div>
+      <textarea id="q4" data-min="50" placeholder="선이의 노력이 왜 통하지 않았는지 적어보세요..." oninput="updateCharCount(this, 'q4Count', 50)"></textarea>
+      <div class="textarea-meta">
+        <span class="hint">💡 권장: 100~150자 (최소 50자)</span>
+        <span class="count-info insufficient" id="q4Count">0 / 50자</span>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="goStep(1)">← 이전</button>
+      <button class="btn btn-primary" onclick="goStep(3)">다음 →</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============= STEP 3: PART 2 - 내 안의 우리들 ============= -->
+<div class="step" id="step3">
+  <div class="container">
+
+    <div class="step-header">
+      <div class="step-num">PART 2 · 내 안의 우리들</div>
+      <h2>인물 공감과 진짜 우정 생각하기</h2>
+      <p>가장 중요한 부분이에요. 천천히 생각하고 적어보세요</p>
+    </div>
+
+    <!-- Q5. 인물 공감 -->
+    <div class="card">
+      <div class="card-title">
+        <span class="q-num">5</span>
+        나와 가장 닮은 인물은? <span class="optional-tag">공감</span>
+      </div>
+      <div class="card-desc">
+        선이, 지아, 보라 중 <strong>나와 가장 닮았거나 마음이 쓰이는 인물</strong>은 누구인가요?
+      </div>
+
+      <div class="character-grid">
+        <div class="char-card" onclick="selectChar(this, 'q5Char', '선이')">
+          <div class="char-emoji">😔</div>
+          <div class="char-name">선이</div>
+          <div class="char-desc">소외된 주인공</div>
+        </div>
+        <div class="char-card" onclick="selectChar(this, 'q5Char', '지아')">
+          <div class="char-emoji">😟</div>
+          <div class="char-name">지아</div>
+          <div class="char-desc">전학생 친구</div>
+        </div>
+        <div class="char-card" onclick="selectChar(this, 'q5Char', '보라')">
+          <div class="char-emoji">😏</div>
+          <div class="char-name">보라</div>
+          <div class="char-desc">반의 중심 인물</div>
+        </div>
+      </div>
+
+      <textarea id="q5Reason" data-min="50" placeholder="그 인물을 고른 이유와, 나라면 그 갈등 상황에서 어떻게 행동했을지 적어보세요." oninput="updateCharCount(this, 'q5Count', 50)"></textarea>
+      <div class="textarea-meta">
+        <span class="hint">💡 권장: 100~150자 (최소 50자)</span>
+        <span class="count-info insufficient" id="q5Count">0 / 50자</span>
+      </div>
+    </div>
+
+    <!-- Q6. 누가 가장 잘못했나 -->
+    <div class="card">
+      <div class="card-title">
+        <span class="q-num">6</span>
+        내가 볼 땐 누가 제일 잘못했을까?
+      </div>
+      <div class="card-desc">
+        선이, 지아, 보라 중 <strong>가장 잘못한 사람</strong>은 누구라고 생각하나요?
+      </div>
+
+      <div class="radio-list" id="q6List">
+        <label class="radio-item" onclick="selectRadio(this, 'q6', '선이')">
+          <span class="radio-circle"></span>
+          <span class="radio-text">선이가 가장 잘못했다</span>
+          <input type="radio" name="q6" value="선이">
+        </label>
+        <label class="radio-item" onclick="selectRadio(this, 'q6', '지아')">
+          <span class="radio-circle"></span>
+          <span class="radio-text">지아가 가장 잘못했다</span>
+          <input type="radio" name="q6" value="지아">
+        </label>
+        <label class="radio-item" onclick="selectRadio(this, 'q6', '보라')">
+          <span class="radio-circle"></span>
+          <span class="radio-text">보라가 가장 잘못했다</span>
+          <input type="radio" name="q6" value="보라">
+        </label>
+        <label class="radio-item" onclick="selectRadio(this, 'q6', '셋다')">
+          <span class="radio-circle"></span>
+          <span class="radio-text">셋 다 잘못했다</span>
+          <input type="radio" name="q6" value="셋다">
+        </label>
+        <label class="radio-item" onclick="selectRadio(this, 'q6', '아무도')">
+          <span class="radio-circle"></span>
+          <span class="radio-text">아무도 잘못하지 않았다 (어쩔 수 없었다)</span>
+          <input type="radio" name="q6" value="아무도">
+        </label>
+      </div>
+
+      <div class="highlight-box">
+        <span class="label">📌</span> 이유는 꼭 적어주세요. 친구들마다 다른 답이 나올 수 있어요.
+      </div>
+
+      <textarea id="q6Reason" data-min="40" placeholder="왜 그렇게 생각하는지 이유를 적어주세요." oninput="updateCharCount(this, 'q6Count', 40)"></textarea>
+      <div class="textarea-meta">
+        <span class="hint">💡 권장: 80~150자 (최소 40자)</span>
+        <span class="count-info insufficient" id="q6Count">0 / 40자</span>
+      </div>
+    </div>
+
+    <!-- Q7 (NEW). 왜 가장 아픈 비밀을 폭로했나 -->
+    <div class="card">
+      <div class="card-title">
+        <span class="q-num">7</span>
+        왜 하필 '가장 아픈 비밀'을 폭로했을까?
+      </div>
+      <div class="card-desc">
+        선이와 지아는 서로에게 가장 상처 주는 말을 내뱉을 때, <strong>서로의 가장 아픈 비밀을 폭로</strong>하며 싸웁니다.
+      </div>
+      <div class="card-quote">
+        💬 두 사람은 왜 하필 <strong>가장 아픈 비밀</strong>을 골라서 말했을까요?<br>
+        그 순간 두 사람의 마음은 어땠을지 짐작해보세요.
+      </div>
+      <textarea id="q7" data-min="50" placeholder="두 사람이 왜 가장 아픈 비밀을 골라서 말했는지 적어보세요..." oninput="updateCharCount(this, 'q7Count', 50)" style="min-height: 110px;"></textarea>
+      <div class="textarea-meta">
+        <span class="hint">💡 권장: 100~150자 (최소 50자)</span>
+        <span class="count-info insufficient" id="q7Count">0 / 50자</span>
+      </div>
+    </div>
+
+    <!-- Q8. 학폭 신고 시나리오 -->
+    <div class="card">
+      <div class="card-title">
+        <span class="q-num">8</span>
+        만약 학교폭력으로 신고했다면?
+      </div>
+      <div class="card-desc">
+        선이가 보라의 따돌림 행동을 <strong>학교폭력으로 신고했다면</strong>, 그 다음에 어떤 일이 일어났을까요?
+        선이, 지아, 보라 세 사람의 관계는 어떻게 됐을지 예측해 보세요.
+      </div>
+      <div class="highlight-box">
+        <span class="label">💡</span> 좋은 결과·나쁜 결과 모두 가능해요. 정답은 없습니다.
+      </div>
+      <textarea id="q8" data-min="60" placeholder="신고 이후의 상황을 상상해서 적어보세요..." oninput="updateCharCount(this, 'q8Count', 60)" style="min-height: 110px;"></textarea>
+      <div class="textarea-meta">
+        <span class="hint">💡 권장: 100~200자 (최소 60자)</span>
+        <span class="count-info insufficient" id="q8Count">0 / 60자</span>
+      </div>
+    </div>
+
+    <!-- Q9. 윤이의 말 + 통합 -->
+    <div class="card">
+      <div class="card-title">
+        <span class="q-num">9</span>
+        윤이의 말과 함께 생각해보기
+      </div>
+      <div class="card-desc">
+        선이의 동생 윤이는 친구에게 맞고도 계속 같이 노는 이유를 묻자 이렇게 말합니다.
+      </div>
+      <div class="card-quote">
+        💬 "그럼 언제 놀아? 나는 놀고 싶은데..."
+      </div>
+      <div class="card-desc">
+        Q8에서 답한 '학폭 신고 시나리오'와 윤이의 이 말을 <strong>함께 생각해보세요</strong>.<br>
+        갈등을 어떻게 푸는 게 진짜 우정에 더 가까울까요?
+      </div>
+
+      <div class="radio-list" id="q9List">
+        <label class="radio-item" onclick="selectRadio(this, 'q9', 'A')">
+          <span class="radio-circle"></span>
+          <span class="radio-text"><strong>제도(신고·처벌)로 해결</strong>하는 것이 더 가깝다</span>
+          <input type="radio" name="q9" value="A">
+        </label>
+        <label class="radio-item" onclick="selectRadio(this, 'q9', 'B')">
+          <span class="radio-circle"></span>
+          <span class="radio-text">윤이처럼 <strong>그냥 계속 같이 노는 것</strong>이 더 가깝다</span>
+          <input type="radio" name="q9" value="B">
+        </label>
+        <label class="radio-item" onclick="selectRadio(this, 'q9', 'C')">
+          <span class="radio-circle"></span>
+          <span class="radio-text"><strong>둘 다 아닌 제3의 방법</strong>이 있다</span>
+          <input type="radio" name="q9" value="C">
+        </label>
+      </div>
+
+      <textarea id="q9Reason" data-min="60" placeholder="왜 그렇게 생각하는지, 그리고 제3의 방법이라면 어떤 방법인지 적어주세요." oninput="updateCharCount(this, 'q9Count', 60)" style="min-height: 110px;"></textarea>
+      <div class="textarea-meta">
+        <span class="hint">💡 권장: 100~200자 (최소 60자)</span>
+        <span class="count-info insufficient" id="q9Count">0 / 60자</span>
+      </div>
+    </div>
+
+    <!-- Q10. 선택 - 우정 비유 -->
+    <div class="card">
+      <div class="card-title">
+        <span class="q-num">10</span>
+        '진짜 우정'을 비유로 표현하기 <span class="optional-tag">⭐ 선택</span>
+      </div>
+      <div class="card-desc">
+        내가 생각하는 '진짜 우정'을 비유로 표현해보세요. <strong>건너뛰어도 괜찮아요.</strong>
+      </div>
+      <div class="card-quote">
+        💡 예시: "우정은 스마트폰 액정 필름 같다. 한 번 기포가 생기면 빼기 어렵지만, 그래도 폰을 보호하려면 꼭 필요하니까."
+      </div>
+      <textarea id="q10" placeholder="우정은 ___ 같다. 왜냐하면 ___" oninput="updateCharCount(this, 'q10Count', 0)"></textarea>
+      <div class="textarea-meta">
+        <span class="hint">💡 선택 문항입니다 (건너뛰기 OK)</span>
+        <span class="count-info" id="q10Count">0자</span>
+      </div>
+    </div>
+
+    <!-- 마무리 한 줄 -->
+    <div class="card">
+      <div class="card-title">
+        <span class="q-num">✓</span>
+        오늘 활동, 한 줄 소감
+      </div>
+      <div class="card-desc">
+        영화와 활동을 마친 지금, 떠오르는 생각을 한 줄로 적어주세요.
+      </div>
+      <input type="text" class="full-input" id="finalThought" placeholder="예: 친구 관계가 이렇게 복잡한 줄 몰랐어요." maxlength="100">
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="goStep(2)">← 이전</button>
+      <button class="btn btn-success" id="submitBtn" onclick="submitAll()">✅ 제출하기</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============= STEP 4: 완료 화면 ============= -->
+<div class="step" id="step4">
+  <div class="container">
+    <div class="done-screen">
+      <div class="done-icon">🎉</div>
+      <h2>제출 완료!</h2>
+      <p id="doneMsg">
+        고생했어요! 잠시 후 선생님이 친구들의 생각을<br>
+        모아서 함께 살펴볼 거예요.
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- 로딩 오버레이 -->
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="loading-spinner"></div>
+  <div class="loading-text" id="loadingText">제출하고 있어요...</div>
+  <div class="loading-subtext" id="loadingSubtext">잠시만 기다려주세요</div>
+</div>
+
+<!-- 토스트 -->
+<div class="toast" id="toast"></div>
+
+<script>
+  // ⚙️ 설정 — GAS 배포 후 새 URL로 교체하세요
+  const GAS_URL = 'https://script.google.com/macros/s/AKfycbzIOMblImzoIhWUw-rHvZlcY0sEu6_cikOqaxZRzhmdEMrXs3kPkELOqJB7zonZnu6O/exec';
+
+  // 워밍업 ping
+  (function warmup() {
+    if (GAS_URL && GAS_URL !== 'YOUR_GAS_URL_HERE') {
+      fetch(GAS_URL, { method: 'GET' }).catch(function() {});
+    }
+  })();
+
+  var startTime = new Date();
+  var currentStep = 1;
+  var totalSteps = 3;
+  var q1Value = '';
+  var q5Char = '';
+  var q6Value = '';
+  var q9Value = '';
+
+  var stepDescs = ['기본 정보 + 첫인상', '영화 속 우리들 (Q1-4)', '내 안의 우리들 (Q5-10)'];
+
+  // GAS 통신 (재시도 3회)
+  async function gas(action, data, retries) {
+    retries = retries || 3;
+    var url = GAS_URL + '?action=' + action;
+    var lastErr;
+    for (var i = 1; i <= retries; i++) {
+      try {
+        var body = JSON.stringify(Object.assign({}, data, { action: action }));
+        var res = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain' },
+          body: body,
+          redirect: 'follow'
+        });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        var text = await res.text();
+        try { return JSON.parse(text); }
+        catch (e) { return { ok: true, msg: '제출됨(응답 파싱 생략)' }; }
+      } catch (e) {
+        lastErr = e;
+        if (i === retries) throw e;
+        await new Promise(function(r) { setTimeout(r, i * 1000); });
+      }
+    }
+    throw lastErr;
+  }
+
+  // 단계 이동
+  function goStep(n) {
+    if (n < 1 || n > 4) return;
+    if (n > currentStep) {
+      if (!validateStep(currentStep)) return;
+    }
+    document.getElementById('step' + currentStep).classList.remove('active');
+    currentStep = n;
+    document.getElementById('step' + currentStep).classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    updateProgress();
+  }
+
+  // 최소 글자수 검사 헬퍼
+  function checkMinLength(id, min, label) {
+    var el = document.getElementById(id);
+    var len = el.value.trim().length;
+    if (len < min) {
+      showToast('✏️ ' + label + ' (최소 ' + min + '자, 현재 ' + len + '자)');
+      el.focus();
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return false;
+    }
+    return true;
+  }
+
+  // 유효성 검사
+  function validateStep(step) {
+    if (step === 1) {
+      if (!document.getElementById('classInfo').value.trim()) { showToast('📝 학년·반을 입력해주세요!'); return false; }
+      if (!document.getElementById('number').value.trim()) { showToast('📝 번호를 입력해주세요!'); return false; }
+      if (!document.getElementById('name').value.trim()) { showToast('📝 이름을 입력해주세요!'); return false; }
+      if (!document.getElementById('firstImpression').value.trim()) { showToast('💭 첫인상을 한 단어로 적어주세요!'); return false; }
+    }
+    if (step === 2) {
+      if (!q1Value) { showToast('1️⃣ Q1 선택지를 골라주세요!'); return false; }
+      if (!checkMinLength('q2', 30, 'Q2 선이의 마음을 좀 더 자세히 적어주세요')) return false;
+      if (!checkMinLength('q3', 40, 'Q3 지아의 마음을 좀 더 자세히 적어주세요')) return false;
+      if (!checkMinLength('q4', 50, 'Q4 선이의 노력에 대해 좀 더 자세히 적어주세요')) return false;
+    }
+    return true;
+  }
+
+  function updateProgress() {
+    var pct = currentStep <= totalSteps
+      ? Math.round((currentStep - 1) / totalSteps * 100)
+      : 100;
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('stepLabel').textContent =
+      (currentStep <= totalSteps ? currentStep : totalSteps) + '단계 / ' + totalSteps + '단계';
+    document.getElementById('stepDesc').textContent = stepDescs[Math.min(currentStep, totalSteps) - 1] || '';
+  }
+
+  // 라디오 선택
+  function selectRadio(el, name, value) {
+    var siblings = el.parentNode.querySelectorAll('.radio-item');
+    siblings.forEach(function(s) { s.classList.remove('selected'); });
+    el.classList.add('selected');
+    if (name === 'q1') q1Value = value;
+    else if (name === 'q6') q6Value = value;
+    else if (name === 'q9') q9Value = value;
+  }
+
+  // 인물 카드 선택
+  function selectChar(el, name, value) {
+    var siblings = el.parentNode.querySelectorAll('.char-card');
+    siblings.forEach(function(s) { s.classList.remove('selected'); });
+    el.classList.add('selected');
+    if (name === 'q5Char') q5Char = value;
+  }
+
+  // 글자 수 카운터 (+ 색상 변경)
+  function updateCharCount(el, countId, min) {
+    var len = el.value.trim().length;
+    var span = document.getElementById(countId);
+    if (min > 0) {
+      span.textContent = len + ' / ' + min + '자';
+      if (len >= min) {
+        span.classList.remove('insufficient');
+        span.classList.add('sufficient');
+      } else {
+        span.classList.remove('sufficient');
+        span.classList.add('insufficient');
+      }
+    } else {
+      span.textContent = len + '자';
+    }
+  }
+
+  // 토스트
+  function showToast(msg, duration) {
+    duration = duration || 3000;
+    var t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(function() { t.classList.remove('show'); }, duration);
+  }
+
+  // 로딩 오버레이
+  function showLoading(text, subtext) {
+    document.getElementById('loadingText').textContent = text || '제출하고 있어요...';
+    document.getElementById('loadingSubtext').textContent = subtext || '잠시만 기다려주세요';
+    document.getElementById('loadingOverlay').classList.add('show');
+  }
+  function hideLoading() {
+    document.getElementById('loadingOverlay').classList.remove('show');
+  }
+
+  // 폭죽 효과
+  function fireConfetti() {
+    if (typeof confetti === 'undefined') return;
+
+    var duration = 2500;
+    var animationEnd = Date.now() + duration;
+    var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 10000 };
+
+    function randomInRange(min, max) {
+      return Math.random() * (max - min) + min;
+    }
+
+    confetti({
+      particleCount: 100,
+      spread: 70,
+      origin: { y: 0.6 },
+      colors: ['#c0392b', '#d56156', '#5a8a6b', '#e8c992', '#ff8a7a']
+    });
+
+    var interval = setInterval(function() {
+      var timeLeft = animationEnd - Date.now();
+      if (timeLeft <= 0) return clearInterval(interval);
+      var particleCount = 50 * (timeLeft / duration);
+      confetti(Object.assign({}, defaults, {
+        particleCount: particleCount,
+        origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
+        colors: ['#c0392b', '#d56156', '#5a8a6b', '#e8c992']
+      }));
+      confetti(Object.assign({}, defaults, {
+        particleCount: particleCount,
+        origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
+        colors: ['#c0392b', '#d56156', '#5a8a6b', '#e8c992']
+      }));
+    }, 250);
+  }
+
+  // 소요시간 계산
+  function getElapsedTime() {
+    var diff = Math.floor((new Date() - startTime) / 1000);
+    var min = Math.floor(diff / 60);
+    var sec = diff % 60;
+    return min + ':' + (sec < 10 ? '0' + sec : sec);
+  }
+
+  // 제출
+  async function submitAll() {
+    // 마지막 페이지 유효성 검사
+    if (!q5Char) { showToast('5️⃣ Q5 인물을 선택해주세요!'); return; }
+    if (!checkMinLength('q5Reason', 50, 'Q5 이유를 좀 더 자세히 적어주세요')) return;
+    if (!q6Value) { showToast('6️⃣ Q6 누가 잘못했는지 선택해주세요!'); return; }
+    if (!checkMinLength('q6Reason', 40, 'Q6 이유를 좀 더 자세히 적어주세요')) return;
+    if (!checkMinLength('q7', 50, 'Q7 비밀 폭로에 대해 좀 더 자세히 적어주세요')) return;
+    if (!checkMinLength('q8', 60, 'Q8 학폭 시나리오를 좀 더 자세히 적어주세요')) return;
+    if (!q9Value) { showToast('9️⃣ Q9 갈등 해결 방법을 선택해주세요!'); return; }
+    if (!checkMinLength('q9Reason', 60, 'Q9 이유를 좀 더 자세히 적어주세요')) return;
+    if (!document.getElementById('finalThought').value.trim()) { showToast('✏️ 마지막 한 줄 소감을 적어주세요!'); return; }
+
+    var name = document.getElementById('name').value.trim();
+    var btn = document.getElementById('submitBtn');
+
+    var originalBtnText = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<span class="btn-spinner"></span> 제출 중...';
+
+    showLoading('제출하고 있어요...', '서버에 연결 중이에요');
+
+    var loadingMessages = [
+      { text: '제출하고 있어요...', sub: '서버에 연결 중이에요' },
+      { text: '답변을 저장하고 있어요...', sub: '거의 다 됐어요' },
+      { text: '마무리하고 있어요...', sub: '잠시만요' }
+    ];
+    var msgIdx = 0;
+    var msgTimer = setInterval(function() {
+      msgIdx = (msgIdx + 1) % loadingMessages.length;
+      var m = loadingMessages[msgIdx];
+      document.getElementById('loadingText').textContent = m.text;
+      document.getElementById('loadingSubtext').textContent = m.sub;
+    }, 2000);
+
+    var payload = {
+      timestamp: new Date().toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' }),
+      classInfo: document.getElementById('classInfo').value.trim(),
+      number: document.getElementById('number').value.trim(),
+      name: name,
+      elapsed: getElapsedTime(),
+      firstImpression: document.getElementById('firstImpression').value.trim(),
+
+      // PART 1
+      q1: q1Value,
+      q2_seonReason: document.getElementById('q2').value.trim(),
+      q3_jiaHead: document.getElementById('q3').value.trim(),
+      q4_seonEffort: document.getElementById('q4').value.trim(),
+
+      // PART 2
+      q5_char: q5Char,
+      q5_reason: document.getElementById('q5Reason').value.trim(),
+      q6_blame: q6Value,
+      q6_reason: document.getElementById('q6Reason').value.trim(),
+      q7_secret: document.getElementById('q7').value.trim(),
+      q8_scenario: document.getElementById('q8').value.trim(),
+      q9_method: q9Value,
+      q9_reason: document.getElementById('q9Reason').value.trim(),
+      q10_metaphor: document.getElementById('q10').value.trim(),
+      finalThought: document.getElementById('finalThought').value.trim()
+    };
+
+    try {
+      var result = await gas('submit', payload);
+      clearInterval(msgTimer);
+      hideLoading();
+
+      if (result.ok || (result.msg && result.msg.indexOf('이미 제출') !== -1)) {
+        document.getElementById('doneMsg').innerHTML =
+          '<strong class="student-name">' + name + '</strong> 학생, 제출 완료! 🎉<br>' +
+          '잠시 후 선생님이 친구들의 생각을 모아서 함께 살펴볼 거예요.';
+
+        goStep(4);
+        setTimeout(fireConfetti, 300);
+      } else {
+        var msg = (result && result.msg) ? result.msg : '서버에서 알 수 없는 응답을 보냈어요.';
+        showToast('⚠️ ' + msg);
+        btn.innerHTML = originalBtnText;
+        btn.disabled = false;
+      }
+    } catch (err) {
+      console.error('제출 오류:', err);
+      clearInterval(msgTimer);
+      hideLoading();
+      showToast('⚠️ 제출 중 오류가 발생했어요. 인터넷 연결을 확인하고 다시 시도해주세요.');
+      btn.innerHTML = originalBtnText;
+      btn.disabled = false;
+    }
+  }
+</script>
+
+</body>
+</html>
