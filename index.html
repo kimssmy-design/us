@@ -984,7 +984,7 @@
 
 <script>
   // ⚙️ 설정 — GAS 배포 후 새 URL로 교체하세요
-  const GAS_URL = 'https://script.google.com/macros/s/AKfycbw_74HId9XVQ-vnkkg19kbrxBRYUeEhXYn2gjqJZKW6JpF65DbiEYYuhGlpeJOJHBVp/exec';
+  const GAS_URL = 'YOUR_GAS_URL_HERE';
 
   // 워밍업 ping
   (function warmup() {
@@ -1043,12 +1043,17 @@
     updateProgress();
   }
 
+  // 공백(스페이스·탭·줄바꿈) 제외한 실제 글자 수
+  function countChars(str) {
+    return (str || '').replace(/\s/g, '').length;
+  }
+
   // 최소 글자수 검사 헬퍼
   function checkMinLength(id, min, label) {
     var el = document.getElementById(id);
-    var len = el.value.trim().length;
+    var len = countChars(el.value);
     if (len < min) {
-      showToast('✏️ ' + label + ' (최소 ' + min + '자, 현재 ' + len + '자)');
+      showToast('✏️ ' + label + ' (공백 제외 최소 ' + min + '자, 현재 ' + len + '자)');
       el.focus();
       el.scrollIntoView({ behavior: 'smooth', block: 'center' });
       return false;
@@ -1101,9 +1106,9 @@
     if (name === 'q5Char') q5Char = value;
   }
 
-  // 글자 수 카운터 (+ 색상 변경)
+  // 글자 수 카운터 (+ 색상 변경) — 공백 제외
   function updateCharCount(el, countId, min) {
-    var len = el.value.trim().length;
+    var len = countChars(el.value);
     var span = document.getElementById(countId);
     if (min > 0) {
       span.textContent = len + ' / ' + min + '자';
